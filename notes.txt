@@ -1,0 +1,207 @@
+
+
+
+
+// Big things:
+// Combat AI should be able to single out and focus an enemy across friendly units
+
+
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+main loop(){
+
+
+// !!!! ~~~~ Analysis
+
+// ~~ Logistic analysis
+energyIncome()
+currentCreeps()
+
+
+// ~~ Military analysis
+checkIfAnythingIsUnderAttack()
+decideEnemyThreats()
+decideEnemyTargets()
+decideTopEnemyThreat()
+decideTopEnemyTarget()
+
+
+// ~~ 
+
+needCreeps = doWeNeedCreeps() // use information from the analysis phase
+
+
+
+// ~~ Spawn our creeps
+if(needCreeps || spawnQueue.length == 0){ // do we have a combat squad being spawned?
+  creepsToSpawn = whatCreepsAreNeeded() // checks a spawn queue for combat squads in the making
+  for(creepToSpawn in creepsToSpawn){
+    spawnToUse = creepToSpawn.spawnToUse
+    spawnToUse.spawn(    creepToSpawn.creepBody   ) //from queue
+  }
+}
+
+console.log("At "+ CPU +" after this step")
+
+
+
+
+
+
+
+
+// !!!! ~~~~ Action
+
+
+
+
+// ~~ Military action
+
+~~~~~    ~~~~~
+for(creep in combatCreeps){
+  if(creep.status.underAttack == true){
+    // try to stay safe
+  }else{
+    // harvest energy & do construction
+  }
+}
+
+~~~~~ OR ~~~~~
+
+for(creep in combatCreeps){
+  if(creep.status.underAttack == true){
+    // try to stay safe
+  }else{
+    // harvest energy & do construction
+  }
+}
+
+
+~~~~~    ~~~~~
+
+console.log("At "+ CPU +" after this step")
+
+
+
+
+
+
+
+
+// Collect energy after military action to avoid CPU timeout
+
+for(creep in workerCreeps){
+  if(creep.status.underAttack == true){
+    // try to stay safe
+  }else{
+    // harvest energy & do construction
+  }
+}
+
+console.log("At "+ CPU +" after this step")
+
+
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+memory.combatSquads[{
+  "groupUpSpot":"xy8308",  
+  "roles":["archer", "melee", "healer",],
+  "creepIds":["sht23","uenu4"],
+  "attacking":false,
+  "order":{
+    "taskName": "guard",
+    "mainTargetId":"ehl8"
+  }
+}]
+
+
+Combat Squad Behavior Loop{
+
+
+  for(squad in memory.combatSquad){
+    // Is squad full?
+    if(squad.creepIds.length < roles.length && squad.attacking == false){
+      for(creepId in squad.creepIds){
+        stayClose(squad.groupUpSpot)
+      }
+    }else{ // If squad is full
+      // Take orders somehow
+      switch(squad.order.taskName){
+        case "attack":
+        case "guard":
+      }
+    }
+  }
+
+
+
+}
+
+
+
+
+
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+Combat Squad Movement{
+
+
+
+
+leaderPos = leader.pos()
+middlePos = healer.pos()
+
+
+
+
+
+// if the squad is all together, take a step forward together
+if(linearDistance(leaderPos, healer) <= 1 )
+  path = leader.pathFind(combatTarget)
+  // All the creeps in squad take a step towards target
+  leader.moveTo(path[0])
+  healer.moveTo(leaderPos)
+  archer.moveTo(middlePos)
+}else{ // otherwise try to group back up
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
