@@ -1,5 +1,5 @@
 
-import { prototypes, utils, constants, arenaInfo } from 'game';
+import { prototypes, utils, constants, getTicks, arenaInfo } from 'game';
 import { memoryInit } from './memory';
 import { doRoleTasks } from './role.main';
 import { autoSpawn } from './spawn';
@@ -62,6 +62,7 @@ console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 
 
 
+
 export function loop() {
 
   // const allCreeps = utils.getObjectsByPrototype(prototypes.Creep);
@@ -91,10 +92,10 @@ export function loop() {
 
   // update
 
-  // for(creep of mainHeap.myCreeps){
-  //   // doRoleTasks(creep)
-  //   doRoleTasks(mainMemory, creep)
-  // }
+  for( let creep of mainHeap.myCreeps){
+    // doRoleTasks(creep)
+    doRoleTasks(mainMemory, mainHeap, creep)
+  }
 
 
 
@@ -114,23 +115,29 @@ export function loop() {
 
 
 
+  if( getTicks() % 3 == 0){
+    // updateBasePhase(mainMemory, mainHeap);
+    console.log("~~~~")
+    console.log("~~~~~~~~~~~~~~~~~")
+    // console.log("end of tick memory: ")
+    // console.log(mainMemory)
+    // console.log("---")
+    console.log("end of tick heap: ")
+    console.log(mainHeap)
+    console.log("~~~~~~~~~~~~~~~~~")
+    console.log("~~~~")
+  }
 
-  // updateBasePhase(mainMemory, mainHeap);
-  console.log("~~~~")
-  console.log("~~~~~~~~~~~~~~~~~")
-  // console.log("end of tick memory: ")
-  // console.log(mainMemory)
-  console.log("---")
-  console.log("end of tick heap: ")
-  console.log(mainHeap)
-  console.log("~~~~~~~~~~~~~~~~~")
-  console.log("~~~~")
+
   
-  console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-  console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-  console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-  console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+  console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+  console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 }
+
+
+
+
+
 
 
 

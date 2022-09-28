@@ -29,28 +29,38 @@ export const autoSpawn = function (memory, heap, spawnGoals) {
       // console.log("creepToSpawn: ")
       // console.log(memory.autoSpawn.spawnQueue[creepToSpawn])
       let result = spawnToUse.spawnCreep(memory.autoSpawn.spawnQueue[creepToSpawn].bodyParts) //from queue
-      if (typeof result == "object")
-      switch( result ){
-        // if successful delete from the spawn queue
-        case constants.OK:
-          delete memory.autoSpawn.spawnQueue[creepToSpawn]
-          console.log("creep spawned:")
-          console.log(result.Object)
-          result.Object.newMemory = "I remember!"
-          console.log(result.Object)
-          continue;
+      if ( result.error != undefined ){
+        switch( result.error ){
+          // if successful delete from the spawn queue
+          case constants.ERR_BUSY:
+          case constants.ERR_NOT_ENOUGH_ENERGY:
+            console.log("spawn is busy")
+            break;
+  
+          default:
+          case constants.ERR_NOT_OWNER:
+          case constants.ERR_INVALID_ARGS:
+            console.log("something went wrong in autoSpawn; result : ")
+            console.log(result)
+        }
+        
+      }else{
+        console.log("spawn successful")
+        console.log("creep spawned:")
+        // console.log(result.creep)
+        // console.log(result.Object)
+        // result.creep.newMemory = "I remember!"
+        // console.log(result)
+        result.object.role = memory.autoSpawn.spawnQueue[creepToSpawn].role
 
-        case constants.ERR_BUSY:
-        case constants.ERR_NOT_ENOUGH_ENERGY:
-          console.log("spawn is busy")
-          break;
-
-        default:
-        case constants.ERR_NOT_OWNER:
-        case constants.ERR_INVALID_ARGS:
-          console.log("something went wrong in autoSpawn; result : ")
-          console.log(result)
+        // result.Object.newMemory = "I remember!"
+        // console.log(result.Object)
+        console.log(result)
+        // memory.autoSpawn.lastRoleSpawned = memory.autoSpawn.spawnQueue[creepToSpawn].role
+        break;
       }
+
+
     }
   }
 
@@ -74,7 +84,7 @@ const updateSpawnQueue = function (memory, heap, spawnGoals ){
           console.log("Pushing tinyMover to spawn queue");
           for (let i = 0; i < spawnGoals[role]; i++){
             newQueue.push({
-              "name": role + "_" + getTicks() +":"+ i,
+              // "name": role + "_" + getTicks() +":"+ i,
               "role": role,
               "spawnToUseId": heap.mySpawns[0].id,
               "bodyParts": ["move", "carry"],
@@ -85,7 +95,7 @@ const updateSpawnQueue = function (memory, heap, spawnGoals ){
         case "settler":
           for (let i = 0; i < spawnGoals[role]; i++){
             newQueue.push({
-              "name": role + "_" + getTicks(),
+              // "name": role + "_" + getTicks(),
               "role": role,
               "spawnToUseId": heap.mySpawns[0],
               "bodyParts": ["move", "move", "carry", "carry", "carry", ],
@@ -114,7 +124,8 @@ const updateSpawnQueue = function (memory, heap, spawnGoals ){
 const autoSpawnMemoryInit = function (memory ){
   memory.autoSpawn = {
     "setAtPhase":0,
-    "spawnQueue": []
+    "spawnQueue": [],
+    // "lastRoleSpawned":"none"
   }
   memory.initStatus.autoSpawn = true
 }
