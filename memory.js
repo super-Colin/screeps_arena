@@ -14,16 +14,16 @@
 export const memoryInit = function () {
   return {
     basePhase: 0,
-    basePhaseLimit: 5,
+    basePhaseLimit: 3,
     warStatus: {
       underAttack: false,
       mainTarget: "",
     },
-    creeps: {
-      combatSquads: [],
-      builderSquads: [],
-    },
-    spawns: {},
+    // creeps: {
+    //   combatSquads: [],
+    //   builderSquads: [],
+    // },
+    // spawns: {},
     initStatus: {}
   }
 }

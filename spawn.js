@@ -1,5 +1,5 @@
 import { constants, getObjectById, getTicks } from 'game';
-import { incrementBasePhase } from './main.mjs';
+import { addToSquad, incrementBasePhase } from './main.mjs';
 
 
 
@@ -24,12 +24,18 @@ export const autoSpawn = function (memory, heap, spawnGoals) {
   if (memory.autoSpawn.spawnQueue.length > 0){
     console.log("trying to spawn some creeps")
     for (let creepToSpawn in memory.autoSpawn.spawnQueue) {
-      let spawnToUse = getObjectById(memory.autoSpawn.spawnQueue[creepToSpawn].spawnToUseId)
-      // console.log("spawnToUse: ")
-      // console.log(spawnToUse)
-      // console.log("creepToSpawn: ")
-      // console.log(memory.autoSpawn.spawnQueue[creepToSpawn])
-      let result = spawnToUse.spawnCreep(memory.autoSpawn.spawnQueue[creepToSpawn].bodyParts) //from queue
+      console.log("trying to spawn :")
+      console.log(memory.autoSpawn.spawnQueue[creepToSpawn])
+      // let spawnToUse = getObjectById(memory.autoSpawn.spawnQueue[creepToSpawn].spawnToUseId)
+      // if (spawnToUse == undefined ){
+      // // if (spawnToUse == undefined || spawnToUse.id == undefined){
+      //   console.log("spawnToUse was undefined :")
+      //   console.log(spawnToUse)
+      //   // break;
+      // }
+      // let result = spawnToUse.spawnCreep(memory.autoSpawn.spawnQueue[creepToSpawn].bodyParts) //from queue
+      // TODO make the spawnToUse work again
+      let result = heap.mySpawns[0].spawnCreep(memory.autoSpawn.spawnQueue[creepToSpawn].bodyParts) //from queue
       if ( result.error != undefined ){
         switch( result.error ){
           case constants.ERR_BUSY:
@@ -49,6 +55,11 @@ export const autoSpawn = function (memory, heap, spawnGoals) {
         result.object.role = memory.autoSpawn.spawnQueue[creepToSpawn].role
         result.object.name = memory.autoSpawn.spawnQueue[creepToSpawn].name
         console.log(result)
+        if (memory.autoSpawn.spawnQueue[creepToSpawn].squadName != undefined){
+          result.object.squadName = memory.autoSpawn.spawnQueue[creepToSpawn].squadName
+          console.log("adding to squad")
+          addToSquad(memory, memory.autoSpawn.spawnQueue[creepToSpawn].name, memory.autoSpawn.spawnQueue[creepToSpawn].squadName)
+        }
         // if successful delete from the spawn queue
         console.log("deleting from spawn queue, length before is " + memory.autoSpawn.spawnQueue.length)
         memory.autoSpawn.spawnQueue.shift();
@@ -82,44 +93,34 @@ const updateSpawnQueue = function (memory, heap, spawnGoals ){
     let newQueue=[]
     console.log("Spawn goals recieved are ");
     console.log(spawnGoals);
+    let i = 0;
     for(let role in spawnGoals){
-      switch (role){
-        case "tinyMover":
-          console.log("Pushing tinyMover to spawn queue");
-          for (let i = 0; i < spawnGoals[role]; i++){
-            newQueue.push({
-              "name": role + "_" + getTicks() +":"+ i,
-              "role": role,
-              "spawnToUseId": heap.mySpawns[0].id,
-              "bodyParts": ["move", "carry"],
-            })
+      i ++;
+      if(role == "squad"){
+        console.log("adding squad to spawn queue")
+        console.log(spawnGoals[role])
+        for (let squadRole in spawnGoals[role]) {
+          let resultQueue = makeCreepBlueprint_fromRole(memory, heap, spawnGoals, squadRole, i, "squad_" + getTicks() + ":" + i)
+          if (resultQueue.length != 0) {
+            for (let creepBlueprint of resultQueue) {
+              newQueue.push(creepBlueprint)
+            }
           }
-          break;
+        }
 
-        case "settler":
-          for (let i = 0; i < spawnGoals[role]; i++){
-            newQueue.push({
-              "name": role + "_" + getTicks() + ":" + i,
-              "role": role,
-              "spawnToUseId": heap.mySpawns[0].id,
-              "bodyParts": ["move", "move", "carry", "carry", "carry", ],
-            })
+
+      }else{
+        let resultQueue = makeCreepBlueprint_fromRole(memory, heap, spawnGoals, role, i)
+
+        if (resultQueue.length != 0){
+          for (let creepBlueprint of resultQueue){
+            newQueue.push(creepBlueprint)
           }
-          break;
-
-        case "warrior":
-          for (let i = 0; i < spawnGoals[role]; i++){
-            newQueue.push({
-              "name": role + "_" + getTicks() + ":" + i,
-              "role": role,
-              "spawnToUseId": heap.mySpawns[0].id,
-              "bodyParts": ["move", "move", "attack", "move", "attack" ],
-            })
-          }
-          break;
-
-
+        }
       }
+
+
+      
     }
     console.log("New spawn queue is ");
     console.log(newQueue);
@@ -136,13 +137,91 @@ const updateSpawnQueue = function (memory, heap, spawnGoals ){
 
 
 
-const autoSpawnMemoryInit = function (memory ){
-  memory.autoSpawn = {
-    "setAtPhase":0,
-    "spawnQueue": [],
-    // "lastRoleSpawned":"none"
+const makeCreepBlueprint_fromRole = function (memory, heap, spawnGoals, role, i = 99,  squadName = "") {
+
+  let newQueue = []
+  console.log("makeCreepBlueprint_fromRole trying role & spawn : ")
+  console.log("squad : '"+ squadName +"'")
+  console.log(role)
+
+  let roleNumber;
+  let isSquad = (squadName != "");
+  switch (role) {
+    
+
+    case "tinyMover":
+      roleNumber = isSquad ? spawnGoals["squad"][role] : spawnGoals[role]
+      for (let i = 0; i < roleNumber; i++) {
+        let newBlueprint = {
+          "name": role + "_" + getTicks() + ":" + i,
+          "role": role,
+          "spawnToUseId": heap.mySpawns[0].id,
+          "bodyParts": ["move", "carry"],
+        };
+        if(squadName != ""){
+          newBlueprint.squadName = squadName
+        }
+        console.log("makeCreepBlueprint is pushing tinyMover to queue")
+        newQueue.push(newBlueprint)
+      }
+      break;
+
+    case "settler":
+      roleNumber = isSquad ? spawnGoals["squad"][role] : spawnGoals[role]
+      for (let i = 0; i < roleNumber; i++) {
+        let newBlueprint = {
+          "name": role + "_" + getTicks() + ":" + i,
+          "role": role,
+          "spawnToUseId": heap.mySpawns[0].id,
+          "bodyParts": ["move", "move", "carry", "carry", "carry",],
+        };
+        if (squadName != "") {
+          newBlueprint.squadName = squadName
+        }
+        console.log("makeCreepBlueprint is pushing settler to queue")
+        newQueue.push(newBlueprint)
+      }
+      break;
+
+    case "warrior":
+      roleNumber = isSquad ? spawnGoals["squad"][role] : spawnGoals[role]
+      for (let i = 0; i < roleNumber; i++) {
+        let newBlueprint = {
+          "name": role + "_" + getTicks() + ":" + i,
+          "role": role,
+          "spawnToUseId": heap.mySpawns[0].id,
+          "bodyParts": ["move", "move", "attack", "move", "attack"],
+        };
+        if (squadName != "") {
+          console.log("warrior part of group : " + squadName)
+          newBlueprint.squadName = squadName
+        }
+        console.log("makeCreepBlueprint is pushing warrior to queue")
+        newQueue.push(newBlueprint)
+      }
+      break;
+    
+
+    case "healer":
+      roleNumber = isSquad ? spawnGoals["squad"][role] : spawnGoals[role]
+      for (let i = 0; i < roleNumber; i++) {
+        let newBlueprint = {
+          "name": role + "_" + getTicks() + ":" + i,
+          "role": role,
+          "spawnToUseId": heap.mySpawns[0].id,
+          "bodyParts": ["move", "move", "heal"],
+        };
+        if (squadName != "") {
+          newBlueprint.squadName = squadName
+        }
+        console.log("makeCreepBlueprint is pushing healer to queue")
+        newQueue.push(newBlueprint)
+      }
+      break;
   }
-  memory.initStatus.autoSpawn = true
+  console.log("makeCreepBlueprint_fromRole returning: ")
+  console.log(newQueue)
+  return newQueue
 }
 
 
@@ -156,7 +235,14 @@ const autoSpawnMemoryInit = function (memory ){
 
 
 
-
+const autoSpawnMemoryInit = function (memory) {
+  memory.autoSpawn = {
+    "setAtPhase": 0,
+    "spawnQueue": [],
+    // "lastRoleSpawned":"none"
+  }
+  memory.initStatus.autoSpawn = true
+}
 
 
 
