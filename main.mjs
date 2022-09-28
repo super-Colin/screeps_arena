@@ -16,7 +16,7 @@ var mainInit = false;
 
 var phaseSpawnGoals = {
   0: {// phase 0: initilization
-    "tinyMover":0,
+    // "tinyMover":0,
   }, // once memory is initialized, increment phase
 
   1: { // phase 1: spawn some small creeps to get energy coming in
@@ -24,20 +24,23 @@ var phaseSpawnGoals = {
   },// once we have some tinyMovers bringing in energy, increment phase
 
   2: { // phase 2:build some tinyMover to go settle at newly spawning containers
-    "tinyMover": 3,
+    // "tinyMover": 0,
     "settler": 2,
+    "warrior": 1,
   }, // once we have some settlers ready, increment phase
 
   3: { // phase 3: start building a combat squad
-    "tinyMover": 2,
-    "settler": 3,
-    "combatSquad": 1
+    // "tinyMover": 0,
+    // "settler": 3,
+    "warrior": 3,
+    // "combatSquad": 1
   }, // once first squad is complete, increment phase
 
   4: { // phase 4: start harassing and build another squad
-    "tinyMover": 2,
+    // "tinyMover": 0,
+    "warrior": 3,
     "settler": 3,
-    "combatSquad": 2
+    // "combatSquad": 2
   }, // once second squad is complete, increment phase
 
   5: { // phase 5: keep building squads and try to destroy enemy spawn
@@ -80,10 +83,10 @@ export function loop() {
   const allSpawns = utils.getObjectsByPrototype(prototypes.StructureSpawn);
   var mainHeap = { // heap will be our temp memory updated every tick and compared to mainMemory
     "myCreeps": allCreeps.filter(creep => creep.my),
-    // "enemyCreeps": allCreeps.filter(creep  => ! creep.my),
+    "enemyCreeps": allCreeps.filter(creep  => ! creep.my),
     // "allSources": utils.getObjectsByPrototype(prototypes.Source),
     "mySpawns": allSpawns.filter(spawn => spawn.my),
-    // "enemySpawns": allSpawns.filter(spawn => ! spawn.my),
+    "enemySpawns": allSpawns.filter(spawn => ! spawn.my),
   }
 
 
@@ -119,9 +122,11 @@ export function loop() {
     // updateBasePhase(mainMemory, mainHeap);
     console.log("~~~~")
     console.log("~~~~~~~~~~~~~~~~~")
-    // console.log("end of tick memory: ")
-    // console.log(mainMemory)
-    // console.log("---")
+    if (getTicks() % 6 == 0) {
+      console.log("end of tick memory: ")
+      console.log(mainMemory)
+      console.log("---")
+    }
     console.log("end of tick heap: ")
     console.log(mainHeap)
     console.log("~~~~~~~~~~~~~~~~~")
@@ -137,7 +142,10 @@ export function loop() {
 
 
 
-
+export const incrementBasePhase = function (memory){
+  console.log("incrementing basePhase")
+  memory.basePhase ++;
+}
 
 
 

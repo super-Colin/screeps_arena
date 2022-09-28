@@ -14,6 +14,7 @@
 export const memoryInit = function () {
   return {
     basePhase: 0,
+    basePhaseLimit: 5,
     warStatus: {
       underAttack: false,
       mainTarget: "",
