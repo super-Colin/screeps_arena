@@ -147,7 +147,6 @@ const makeCreepBlueprint_fromRole = function (memory, heap, spawnGoals, role, i 
   let roleNumber;
   let isSquad = (squadName != "");
   switch (role) {
-    
 
     case "tinyMover":
       roleNumber = isSquad ? spawnGoals["squad"][role] : spawnGoals[role]
@@ -155,12 +154,10 @@ const makeCreepBlueprint_fromRole = function (memory, heap, spawnGoals, role, i 
         let newBlueprint = {
           "name": role + "_" + getTicks() + ":" + i,
           "role": role,
+          "squadName": squadName,
           "spawnToUseId": heap.mySpawns[0].id,
           "bodyParts": ["move", "carry"],
         };
-        if(squadName != ""){
-          newBlueprint.squadName = squadName
-        }
         console.log("makeCreepBlueprint is pushing tinyMover to queue")
         newQueue.push(newBlueprint)
       }
@@ -172,12 +169,11 @@ const makeCreepBlueprint_fromRole = function (memory, heap, spawnGoals, role, i 
         let newBlueprint = {
           "name": role + "_" + getTicks() + ":" + i,
           "role": role,
+          "squadName": squadName,
           "spawnToUseId": heap.mySpawns[0].id,
           "bodyParts": ["move", "move", "carry", "carry", "carry",],
         };
-        if (squadName != "") {
-          newBlueprint.squadName = squadName
-        }
+
         console.log("makeCreepBlueprint is pushing settler to queue")
         newQueue.push(newBlueprint)
       }
@@ -189,18 +185,15 @@ const makeCreepBlueprint_fromRole = function (memory, heap, spawnGoals, role, i 
         let newBlueprint = {
           "name": role + "_" + getTicks() + ":" + i,
           "role": role,
+          "squadName": squadName,
           "spawnToUseId": heap.mySpawns[0].id,
           "bodyParts": ["move", "move", "attack", "move", "attack"],
         };
-        if (squadName != "") {
-          console.log("warrior part of group : " + squadName)
-          newBlueprint.squadName = squadName
-        }
+
         console.log("makeCreepBlueprint is pushing warrior to queue")
         newQueue.push(newBlueprint)
       }
       break;
-    
 
     case "healer":
       roleNumber = isSquad ? spawnGoals["squad"][role] : spawnGoals[role]
@@ -208,12 +201,11 @@ const makeCreepBlueprint_fromRole = function (memory, heap, spawnGoals, role, i 
         let newBlueprint = {
           "name": role + "_" + getTicks() + ":" + i,
           "role": role,
+          "squadName": squadName,
           "spawnToUseId": heap.mySpawns[0].id,
           "bodyParts": ["move", "move", "heal"],
         };
-        if (squadName != "") {
-          newBlueprint.squadName = squadName
-        }
+
         console.log("makeCreepBlueprint is pushing healer to queue")
         newQueue.push(newBlueprint)
       }
