@@ -108,7 +108,16 @@ console.log("At "+ CPU +" after this step")
 
 
 
+memory.matrix.twoWide={
+  "x":x,
+  "y":y,
+  "complete":true
 }
+
+
+
+
+
 
 
 

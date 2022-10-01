@@ -1,8 +1,11 @@
 
 import { prototypes, utils, constants, getTicks, arenaInfo } from 'game';
+import { matrixManager } from './matrix.main';
+import { twoWideMatrix } from './matrix.twoWide';
 import { memoryInit } from './memory';
 import { doRoleTasks } from './role.main';
 import { autoSpawn } from './spawn';
+import { squadManager } from './squad.main';
 // import { arenaInfoDump } from './myUtils'; // my utils
 
 
@@ -11,6 +14,8 @@ import { autoSpawn } from './spawn';
 
 // long term variables
 var mainMemory = {}
+
+// var matrix = twoWideMatrix();
 
 var mainInit = false;
 
@@ -111,11 +116,9 @@ export function loop() {
 
 
 
+  // DEBUG INFO
   console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
   console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-
-
-
   if (getTicks() % 3 == 0) {
     // updateBasePhase(mainMemory, mainHeap);
     console.log("~~~~")
@@ -130,8 +133,6 @@ export function loop() {
     console.log("~~~~~~~~~~~~~~~~~")
     console.log("~~~~")
   }
-
-
   console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
   console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 
@@ -141,18 +142,13 @@ export function loop() {
 
 
 
-
-
-
-
-
+  squadManager(mainMemory, mainHeap);
+  // matrixManager(mainMemory, mainHeap);
+  matrixManager(mainMemory, mainHeap)
 
 
 
   autoSpawn(mainMemory, mainHeap, phaseSpawnGoals[mainMemory.basePhase]);
-
-
-  // update
 
   for( let creep of mainHeap.myCreeps){
     // doRoleTasks(creep)
